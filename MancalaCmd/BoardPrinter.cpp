@@ -19,11 +19,9 @@ string Board::buildGridString()
 
 	// build first row, opponent then player
 	for (size_t i = 0; i < opponentGrid.size(); i++) {
-		//cout << "[" << opponentGrid[i][topRow] << "] ";
 		gridStr += string("[") + to_string(opponentGrid[i][topRow]) + "] ";
 	}
 	for (size_t i = 0; i < playerGrid.size(); i++) {
-		//cout << "[" << playerGrid[i][topRow] << "] ";
 		gridStr += string("[") + to_string(playerGrid[i][topRow]) + "] ";
 	}
 
@@ -32,7 +30,6 @@ string Board::buildGridString()
 
 	// build bottom row, opponent then player
 	for (size_t i = 0; i < opponentGrid.size(); i++) {
-		//cout << "[" << opponentGrid[i][bottomRow] << "] ";
 		gridStr += string("[") + to_string(opponentGrid[i][bottomRow]) + "] ";
 	}
 	for (size_t i = 0; i < playerGrid.size(); i++) {
