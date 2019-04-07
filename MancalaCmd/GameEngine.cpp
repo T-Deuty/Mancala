@@ -4,11 +4,16 @@
 
 GameEngine::GameEngine()
 {
+	gameBoard = new Board();
+
+
+	gameBoard->printBoard();
 }
 
 
 GameEngine::~GameEngine()
 {
+	delete gameBoard;
 }
 
 
@@ -125,5 +130,13 @@ void GameEngine::handleInvalidInput(string stringInput, int intInput)
 // Updates the board with a user-defined move, and prints out the result
 void GameEngine::makeMove(tuple<int, int> moveCoordinates)
 {
-	// TODO: Add your implementation code here.
+	// player is top row
+	if (get<1>(moveCoordinates) == player) {
+		gameBoard->grid[get<0>(moveCoordinates)][get<1>(moveCoordinates)] = 0;
+	}
+	else {
+		gameBoard->grid[get<0>(moveCoordinates)][get<1>(moveCoordinates)] = 0;
+	}
+
+	gameBoard->printBoard();
 }

@@ -5,12 +5,15 @@
 #include <sstream>
 #include <tuple>
 #include <algorithm>
+#include "Board.h"
 
 using namespace std;
 
 class GameEngine
 {
 private:
+	Board *gameBoard;
+
 	string inputStr;
 
 	// holds which player's turn it currently is

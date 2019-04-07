@@ -5,16 +5,11 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include "Board.h"
 #include "GameEngine.h"
 
 int main()
 {
 	GameEngine *gameEngine = new GameEngine();
-	Board *gameBoard = new Board();
-	
-
-	gameBoard->printBoard();
 
 	gameEngine->handleUserInput();
 
