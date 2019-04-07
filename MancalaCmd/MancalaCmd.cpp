@@ -6,26 +6,17 @@
 #include <string>
 #include <sstream>
 #include "Board.h"
+#include "GameEngine.h"
 
 int main()
 {
-	Board gameBoard = Board();
+	GameEngine *gameEngine = new GameEngine();
+	Board *gameBoard = new Board();
+	
 
-	gameBoard.printBoard();
+	gameBoard->printBoard();
 
-	int moveRow, moveCol;
-	string inputStr;
-
-	do {
-		cout << "\nEnter a row and column to make the next move. Type \"exit\" to end the program. \nEnter the row: ";
-		getline(cin, inputStr);
-		if (inputStr == "exit") break;
-		stringstream(inputStr) >> moveRow;
-		cout << "\nEnter the column: ";
-		getline(cin, inputStr);
-		if (inputStr == "exit") break;
-		stringstream(inputStr) >> moveCol;
-	} while (inputStr != "exit");
+	gameEngine->handleUserInput();
 
 	exit(0);
 }
