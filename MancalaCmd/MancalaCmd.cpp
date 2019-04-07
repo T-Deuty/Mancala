@@ -6,14 +6,17 @@
 #include <string>
 #include <sstream>
 #include "Board.h"
+#include "GameEngine.h"
 
 int main()
 {
-	Board gameBoard = Board();
-
-	gameBoard.printBoard();
-
+	GameEngine *gameEngine = new GameEngine();
+	Board *gameBoard = new Board();
 	
+
+	gameBoard->printBoard();
+
+	gameEngine->handleUserInput();
 
 	exit(0);
 }
