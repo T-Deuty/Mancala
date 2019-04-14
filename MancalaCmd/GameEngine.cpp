@@ -38,12 +38,12 @@ bool GameEngine::checkValidInput(int rowOrCol, int input)
 {
 	bool returnVal = false;
 	
-	if (rowOrCol == row) {
+	if (rowOrCol == col) {
 		if (input >= 0 && input <= 5) {
 			returnVal = true;
 		}
 	}
-	else if (rowOrCol == col) {
+	else if (rowOrCol == row) {
 		//TODO - add player validation
 		if (input == 0 || input == 1) {
 			returnVal = true;
@@ -74,55 +74,67 @@ bool GameEngine::checkValidInput(string input)
 tuple<int, int> GameEngine::takeUserInput()
 {
 	int moveRow, moveCol;
-	// TODO: Add your implementation code here.
+	bool errorDetected = false;
 	cout << "\nEnter a row and column to make the next move. Type \"exit\" to end the program. \nEnter the row: ";
 	getline(cin, inputStr);
+	
 
 	if (!checkValidInput(inputStr)) {
-		handleInvalidInput(inputStr);
-		return breakTuple;
+		//handleInvalidInput(inputStr);
+		errorDetected = true;
+		errorType = nonInt;
 	}
 
 	stringstream(inputStr) >> moveRow;
 
 	if (!checkValidInput(0, moveRow)) {
-		handleInvalidInput("error", moveRow);
-		return breakTuple;
+		//handleInvalidInput("error", moveRow);
+		errorDetected = true;
+		errorType = outOfRange;
 	}
 
 	cout << "\nEnter the column: ";
 	getline(cin, inputStr);
 
 	if (!checkValidInput(inputStr)) {
-		handleInvalidInput(inputStr);
-		return breakTuple;
+		//handleInvalidInput(inputStr);
+		errorDetected = true;
+		errorType = nonInt;
 	}
 
 	stringstream(inputStr) >> moveCol;
 
 
 	if (!checkValidInput(1, moveCol)) {
-		handleInvalidInput("error", moveCol);
-		return breakTuple;
+		//handleInvalidInput("error", moveCol);
+		errorDetected = true;
+		errorType = outOfRange;
 	}
 
-	return make_tuple(moveRow, moveCol);
+	tuple<int, int> returnTuple;
+
+	errorDetected ? returnTuple = breakTuple : returnTuple = make_tuple(moveRow, moveCol);
+
+	return returnTuple;
 }
 
 
 // Handles invalid user input, displays error message per invalid case
-void GameEngine::handleInvalidInput(string stringInput, int intInput)
+void GameEngine::handleInvalidInput()
 {
-	if (stringInput == "error") {
-		// TODO: better message handling here
-		cout << "\nInput is out of acceptable range for current player. The current player is " << currentPlayer << "." << endl;
-		handleUserInput();
-	}
-	else if (stringInput == "exit") {
-		cout << "\nExiting program. Thanks for playing!" << endl;
-	}
-	else {
-		cout << "\nInvalid input, please try the move again.\n";
+	switch (errorType)
+	{
+		case exit:
+			cout << "\nExiting program. Thanks for playing!" << endl;
+			break;
+		case nonInt:
+			cout << "\nInvalid input, please try the move again.\n";
+			break;
+		case outOfRange:
+			cout << "\nInput is out of acceptable range for current player. The current player is " << currentPlayer << "." << endl;
+			break;
+		default:
+			break;
 	}
 }
 
@@ -140,9 +152,11 @@ void GameEngine::makeMove(tuple<int, int> moveCoordinates)
 
 		// player is top row
 		if (get<1>(moveCoordinates) == player) {
+			moveCol--;
 			moveLeft(remaining, moveCol);
 		}
 		else {
+			moveCol++;
 			moveRight(remaining, moveCol);
 		}
 	}
@@ -162,8 +176,8 @@ void GameEngine::moveLeft(int remaining, int moveCol)
 {
 
 	while (remaining > 0 && moveCol > 0) {
-		moveCol--;
 		remaining = gameBoard->placeGem(0, moveCol, remaining);
+		moveCol--;
 	}
 
 	if (remaining > 0 && moveCol == 0) {
@@ -179,8 +193,8 @@ void GameEngine::moveLeft(int remaining, int moveCol)
 void GameEngine::moveRight(int remaining, int moveCol)
 {
 	while (remaining > 0 && moveCol < 5) {
-		moveCol++;
 		remaining = gameBoard->placeGem(1, moveCol, remaining);
+		moveCol++;
 	}
 
 	if (remaining > 0 && moveCol == 5) {

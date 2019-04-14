@@ -15,7 +15,7 @@ string Board::buildGridString()
 	// build opponent mancala
 	gridStr.append("| |");
 	gridStr.append(25, ' ');
-	gridStr.append("| |\n|" + to_string(opponentMancala) + string("| "));
+	gridStr.append("| |\n|" + to_string(playerMancala) + string("| "));
 
 	// build first row
 	for (size_t i = 0; i < grid[0].size(); i++) {
@@ -23,7 +23,7 @@ string Board::buildGridString()
 	}
 
 	//newline
-	gridStr.append("|" + to_string(playerMancala) + string("|\n| | "));
+	gridStr.append("|" + to_string(opponentMancala) + string("|\n| | "));
 
 	// build bottom row, opponent then player
 	for (size_t i = 0; i < grid[1].size(); i++) {
