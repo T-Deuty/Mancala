@@ -6,6 +6,7 @@
 #include <tuple>
 #include <algorithm>
 #include "Board.h"
+#include "InputExceptions.h"
 
 using namespace std;
 
@@ -51,11 +52,6 @@ private:
 	bool checkValidInput(string input);
 	// Takes in user input from the command line, returns it in the form of a tuple.
 	tuple<int, int> takeUserInput();
-	
-	int errorType;
-
-	// Handles invalid user input, displays error message per invalid case
-	void handleInvalidInput();
 	// Updates the board with a user-defined move, and prints out the result
 	void makeMove(tuple<int, int> moveCoordinates);
 	// Handles left movement on the board

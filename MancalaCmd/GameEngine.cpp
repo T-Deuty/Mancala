@@ -23,10 +23,7 @@ void GameEngine::handleUserInput()
 	do {
 		tuple<int, int> moveCoordinates;
 		moveCoordinates = takeUserInput();
-		if (moveCoordinates == breakTuple) {
-			handleInvalidInput();
-		}
-		else {
+		if (moveCoordinates != breakTuple) {
 			makeMove(moveCoordinates);
 		}
 	} while (inputStr != "exit");
@@ -57,10 +54,6 @@ bool GameEngine::checkValidInput(string input)
 {
 	bool returnVal = true;
 
-	if (input == "exit") {
-		return false;
-	}
-
 	for (auto ch : input) {
 		returnVal = isdigit(ch);
 		if (!returnVal) break;
@@ -78,37 +71,53 @@ tuple<int, int> GameEngine::takeUserInput()
 	cout << "\nEnter a row and column to make the next move. Type \"exit\" to end the program. \nEnter the row: ";
 	getline(cin, inputStr);
 	
+	try
+	{
+		if (inputStr == "exit") {
+			throw exitException();
+		}
+		else if (!checkValidInput(inputStr)) {
+			throw nonIntException();
+		}
 
-	if (!checkValidInput(inputStr)) {
-		//handleInvalidInput(inputStr);
-		errorDetected = true;
-		errorType = nonInt;
+		stringstream(inputStr) >> moveRow;
+
+		if (!checkValidInput(0, moveRow)) {
+			throw out_of_range("Out of range");
+		}
+
+		cout << "\nEnter the column: ";
+		getline(cin, inputStr);
+
+		if (inputStr == "exit") {
+			throw exitException();
+		}
+		else if (!checkValidInput(inputStr)) {
+			throw nonIntException();
+		}
+
+		stringstream(inputStr) >> moveCol;
+
+
+		if (!checkValidInput(1, moveCol)) {
+			throw out_of_range("Out of range");
+		}
 	}
-
-	stringstream(inputStr) >> moveRow;
-
-	if (!checkValidInput(0, moveRow)) {
-		//handleInvalidInput("error", moveRow);
+	catch (const nonIntException& nonIntE)
+	{
 		errorDetected = true;
-		errorType = outOfRange;
+		cout << "\nInvalid input, please try the move again.\n";
 	}
-
-	cout << "\nEnter the column: ";
-	getline(cin, inputStr);
-
-	if (!checkValidInput(inputStr)) {
-		//handleInvalidInput(inputStr);
+	catch (const exitException& exitE)
+	{
 		errorDetected = true;
-		errorType = nonInt;
+		cout << "\nExiting program. Thanks for playing!" << endl;
+
 	}
-
-	stringstream(inputStr) >> moveCol;
-
-
-	if (!checkValidInput(1, moveCol)) {
-		//handleInvalidInput("error", moveCol);
+	catch (const out_of_range& outOfRangeE)
+	{
 		errorDetected = true;
-		errorType = outOfRange;
+		cout << "\nInput is out of acceptable range for current player. The current player is " << currentPlayer << "." << endl;
 	}
 
 	tuple<int, int> returnTuple;
@@ -116,26 +125,6 @@ tuple<int, int> GameEngine::takeUserInput()
 	errorDetected ? returnTuple = breakTuple : returnTuple = make_tuple(moveRow, moveCol);
 
 	return returnTuple;
-}
-
-
-// Handles invalid user input, displays error message per invalid case
-void GameEngine::handleInvalidInput()
-{
-	switch (errorType)
-	{
-		case exit:
-			cout << "\nExiting program. Thanks for playing!" << endl;
-			break;
-		case nonInt:
-			cout << "\nInvalid input, please try the move again.\n";
-			break;
-		case outOfRange:
-			cout << "\nInput is out of acceptable range for current player. The current player is " << currentPlayer << "." << endl;
-			break;
-		default:
-			break;
-	}
 }
 
 

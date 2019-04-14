@@ -154,6 +154,7 @@
   <ItemGroup>
     <ClInclude Include="Board.h" />
     <ClInclude Include="GameEngine.h" />
+    <ClInclude Include="InputExceptions.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
