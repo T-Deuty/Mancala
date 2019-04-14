@@ -4,11 +4,16 @@
 
 GameEngine::GameEngine()
 {
+	gameBoard = new Board();
+
+
+	gameBoard->printBoard();
 }
 
 
 GameEngine::~GameEngine()
 {
+	delete gameBoard;
 }
 
 
@@ -33,12 +38,12 @@ bool GameEngine::checkValidInput(int rowOrCol, int input)
 {
 	bool returnVal = false;
 	
-	if (rowOrCol == row) {
+	if (rowOrCol == col) {
 		if (input >= 0 && input <= 5) {
 			returnVal = true;
 		}
 	}
-	else if (rowOrCol == col) {
+	else if (rowOrCol == row) {
 		//TODO - add player validation
 		if (input == 0 || input == 1) {
 			returnVal = true;
@@ -69,55 +74,67 @@ bool GameEngine::checkValidInput(string input)
 tuple<int, int> GameEngine::takeUserInput()
 {
 	int moveRow, moveCol;
-	// TODO: Add your implementation code here.
+	bool errorDetected = false;
 	cout << "\nEnter a row and column to make the next move. Type \"exit\" to end the program. \nEnter the row: ";
 	getline(cin, inputStr);
+	
 
 	if (!checkValidInput(inputStr)) {
-		handleInvalidInput(inputStr);
-		return breakTuple;
+		//handleInvalidInput(inputStr);
+		errorDetected = true;
+		errorType = nonInt;
 	}
 
 	stringstream(inputStr) >> moveRow;
 
 	if (!checkValidInput(0, moveRow)) {
-		handleInvalidInput("error", moveRow);
-		return breakTuple;
+		//handleInvalidInput("error", moveRow);
+		errorDetected = true;
+		errorType = outOfRange;
 	}
 
 	cout << "\nEnter the column: ";
 	getline(cin, inputStr);
 
 	if (!checkValidInput(inputStr)) {
-		handleInvalidInput(inputStr);
-		return breakTuple;
+		//handleInvalidInput(inputStr);
+		errorDetected = true;
+		errorType = nonInt;
 	}
 
 	stringstream(inputStr) >> moveCol;
 
 
 	if (!checkValidInput(1, moveCol)) {
-		handleInvalidInput("error", moveCol);
-		return breakTuple;
+		//handleInvalidInput("error", moveCol);
+		errorDetected = true;
+		errorType = outOfRange;
 	}
 
-	return make_tuple(moveRow, moveCol);
+	tuple<int, int> returnTuple;
+
+	errorDetected ? returnTuple = breakTuple : returnTuple = make_tuple(moveRow, moveCol);
+
+	return returnTuple;
 }
 
 
 // Handles invalid user input, displays error message per invalid case
-void GameEngine::handleInvalidInput(string stringInput, int intInput)
+void GameEngine::handleInvalidInput()
 {
-	if (stringInput == "error") {
-		// TODO: better message handling here
-		cout << "\nInput is out of acceptable range for current player. The current player is " << currentPlayer << "." << endl;
-		handleUserInput();
-	}
-	else if (stringInput == "exit") {
-		cout << "\nExiting program. Thanks for playing!" << endl;
-	}
-	else {
-		cout << "\nInvalid input, please try the move again.\n";
+	switch (errorType)
+	{
+		case exit:
+			cout << "\nExiting program. Thanks for playing!" << endl;
+			break;
+		case nonInt:
+			cout << "\nInvalid input, please try the move again.\n";
+			break;
+		case outOfRange:
+			cout << "\nInput is out of acceptable range for current player. The current player is " << currentPlayer << "." << endl;
+			break;
+		default:
+			break;
 	}
 }
 
@@ -125,5 +142,65 @@ void GameEngine::handleInvalidInput(string stringInput, int intInput)
 // Updates the board with a user-defined move, and prints out the result
 void GameEngine::makeMove(tuple<int, int> moveCoordinates)
 {
-	// TODO: Add your implementation code here.
+	int startingGems = gameBoard->grid[get<0>(moveCoordinates)][get<1>(moveCoordinates)];
+	int remaining = startingGems;
+	int moveRow = get<0>(moveCoordinates), moveCol = get<1>(moveCoordinates);
+
+	if (startingGems != 0) {
+
+		gameBoard->emptyContainer(moveRow, moveCol);
+
+		// player is top row
+		if (get<1>(moveCoordinates) == player) {
+			moveCol--;
+			moveLeft(remaining, moveCol);
+		}
+		else {
+			moveCol++;
+			moveRight(remaining, moveCol);
+		}
+	}
+	else {
+		// TODO - handle illegal move
+	}
+
+	// end of turn, swap players
+	currentPlayer ? currentPlayer = 0 : currentPlayer = 1;
+
+	gameBoard->printBoard();
+}
+
+
+// Handles left movement on the board
+void GameEngine::moveLeft(int remaining, int moveCol)
+{
+
+	while (remaining > 0 && moveCol > 0) {
+		remaining = gameBoard->placeGem(0, moveCol, remaining);
+		moveCol--;
+	}
+
+	if (remaining > 0 && moveCol == 0) {
+		remaining = gameBoard->placeGem(player, remaining);
+		if (remaining > 0) {
+			moveRight(remaining, moveCol);
+		}
+	}
+}
+
+
+// Handles right movement on the board
+void GameEngine::moveRight(int remaining, int moveCol)
+{
+	while (remaining > 0 && moveCol < 5) {
+		remaining = gameBoard->placeGem(1, moveCol, remaining);
+		moveCol++;
+	}
+
+	if (remaining > 0 && moveCol == 5) {
+		remaining = gameBoard->placeGem(opponent, remaining);
+		if (remaining > 0) {
+			moveLeft(remaining, moveCol);
+		}
+	}
 }
