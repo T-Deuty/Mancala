@@ -49,5 +49,9 @@ private:
 	void handleInvalidInput(string stringInput = "", int intInput = -1);
 	// Updates the board with a user-defined move, and prints out the result
 	void makeMove(tuple<int, int> moveCoordinates);
+	// Handles left movement on the board
+	void moveLeft(int remaining, int moveCol);
+	// Handles right movement on the board
+	void moveRight(int remaining, int moveCol);
 };
 

@@ -130,13 +130,63 @@ void GameEngine::handleInvalidInput(string stringInput, int intInput)
 // Updates the board with a user-defined move, and prints out the result
 void GameEngine::makeMove(tuple<int, int> moveCoordinates)
 {
-	// player is top row
-	if (get<1>(moveCoordinates) == player) {
-		gameBoard->grid[get<0>(moveCoordinates)][get<1>(moveCoordinates)] = 0;
+	int startingGems = gameBoard->grid[get<0>(moveCoordinates)][get<1>(moveCoordinates)];
+	int remaining = startingGems;
+	int moveRow = get<0>(moveCoordinates), moveCol = get<1>(moveCoordinates);
+
+	if (startingGems != 0) {
+
+		gameBoard->emptyContainer(moveRow, moveCol);
+
+		// player is top row
+		if (get<1>(moveCoordinates) == player) {
+			moveLeft(remaining, moveCol);
+		}
+		else {
+			moveRight(remaining, moveCol);
+		}
 	}
 	else {
-		gameBoard->grid[get<0>(moveCoordinates)][get<1>(moveCoordinates)] = 0;
+		// TODO - handle illegal move
 	}
 
+	// end of turn, swap players
+	currentPlayer ? currentPlayer = 0 : currentPlayer = 1;
+
 	gameBoard->printBoard();
+}
+
+
+// Handles left movement on the board
+void GameEngine::moveLeft(int remaining, int moveCol)
+{
+
+	while (remaining > 0 && moveCol > 0) {
+		moveCol--;
+		remaining = gameBoard->placeGem(0, moveCol, remaining);
+	}
+
+	if (remaining > 0 && moveCol == 0) {
+		remaining = gameBoard->placeGem(player, remaining);
+		if (remaining > 0) {
+			moveRight(remaining, moveCol);
+		}
+	}
+}
+
+
+// Handles right movement on the board
+void GameEngine::moveRight(int remaining, int moveCol)
+{
+	while (remaining > 0 && moveCol < 5) {
+		moveCol++;
+		remaining = gameBoard->placeGem(1, moveCol, remaining);
+	}
+
+	if (remaining > 0 && moveCol == 5) {
+		remaining = gameBoard->placeGem(opponent, remaining);
+		if (remaining > 0) {
+			moveLeft(remaining, moveCol);
+		}
+	}
 }
