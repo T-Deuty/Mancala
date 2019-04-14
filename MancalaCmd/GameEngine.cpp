@@ -41,8 +41,7 @@ bool GameEngine::checkValidInput(int rowOrCol, int input)
 		}
 	}
 	else if (rowOrCol == row) {
-		//TODO - add player validation
-		if (input == 0 || input == 1) {
+		if (input == currentPlayer) {
 			returnVal = true;
 		}
 	}
@@ -140,13 +139,11 @@ void GameEngine::makeMove(tuple<int, int> moveCoordinates)
 		gameBoard->emptyContainer(moveRow, moveCol);
 
 		// player is top row
-		if (get<1>(moveCoordinates) == player) {
-			moveCol--;
-			moveLeft(remaining, moveCol);
+		if (get<0>(moveCoordinates) == player) {
+			moveLeft(remaining, --moveCol);
 		}
 		else {
-			moveCol++;
-			moveRight(remaining, moveCol);
+			moveRight(remaining, ++moveCol);
 		}
 	}
 	else {
@@ -163,15 +160,15 @@ void GameEngine::makeMove(tuple<int, int> moveCoordinates)
 // Handles left movement on the board
 void GameEngine::moveLeft(int remaining, int moveCol)
 {
-
-	while (remaining > 0 && moveCol > 0) {
+	while (remaining > 0 && moveCol >= 0) {
 		remaining = gameBoard->placeGem(0, moveCol, remaining);
 		moveCol--;
 	}
 
-	if (remaining > 0 && moveCol == 0) {
+	if (remaining > 0 && moveCol < 0) {
 		remaining = gameBoard->placeGem(player, remaining);
 		if (remaining > 0) {
+			moveCol = 0;
 			moveRight(remaining, moveCol);
 		}
 	}
@@ -181,14 +178,15 @@ void GameEngine::moveLeft(int remaining, int moveCol)
 // Handles right movement on the board
 void GameEngine::moveRight(int remaining, int moveCol)
 {
-	while (remaining > 0 && moveCol < 5) {
+	while (remaining > 0 && moveCol <= 5) {
 		remaining = gameBoard->placeGem(1, moveCol, remaining);
 		moveCol++;
 	}
 
-	if (remaining > 0 && moveCol == 5) {
+	if (remaining > 0 && moveCol > 5) {
 		remaining = gameBoard->placeGem(opponent, remaining);
 		if (remaining > 0) {
+			moveCol = 5;
 			moveLeft(remaining, moveCol);
 		}
 	}
