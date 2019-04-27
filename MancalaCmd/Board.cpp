@@ -66,11 +66,25 @@ void Board::printBoard()
 
 
 // Places a gem at the specified location
-int Board::placeGem(int row, int col, int remaining)
+int Board::placeGem(int row, int col, int remaining, int currentPlayer)
 {
-	remaining--;
+	// catch the case where the gem landed in an empty spot on the player's side
+	if (remaining == 1 && grid[row][col] == 0 && currentPlayer == row) {
 
-	grid[row][col]++;
+		// add final gem and contents of opposite grid spot to player's mancala
+
+		if (currentPlayer == 0) {
+			playerMancala += (grid[1][col] + 1);
+		}
+		else {
+			opponentMancala += (grid[0][col] + 1);
+		}
+	}
+	else {
+		grid[row][col]++;
+	}
+
+	remaining--;
 
 	return remaining;
 }
@@ -78,13 +92,16 @@ int Board::placeGem(int row, int col, int remaining)
 // Places a gem at the specified location
 int Board::placeGem(int mancala, int remaining)
 {
-	remaining--;
+
 	if (mancala) {
 		opponentMancala++;
 	}
 	else {
 		playerMancala++;
 	}
+	
+	remaining--;
+
 	return remaining;
 }
 

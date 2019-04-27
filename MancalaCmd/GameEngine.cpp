@@ -151,7 +151,7 @@ void GameEngine::makeMove(tuple<int, int> moveCoordinates)
 	}
 
 	// end of turn, swap players
-	currentPlayer ? currentPlayer = 0 : currentPlayer = 1;
+	currentPlayer ? currentPlayer = player : currentPlayer = opponent;
 
 	gameBoard->printBoard();
 }
@@ -161,12 +161,14 @@ void GameEngine::makeMove(tuple<int, int> moveCoordinates)
 void GameEngine::moveLeft(int remaining, int moveCol)
 {
 	while (remaining > 0 && moveCol >= 0) {
-		remaining = gameBoard->placeGem(0, moveCol, remaining);
+		remaining = gameBoard->placeGem(0, moveCol, remaining, currentPlayer);
 		moveCol--;
 	}
 
 	if (remaining > 0 && moveCol < 0) {
-		remaining = gameBoard->placeGem(player, remaining);
+		if (currentPlayer == player) {
+			remaining = gameBoard->placeGem(currentPlayer, remaining);
+		}
 		if (remaining > 0) {
 			moveCol = 0;
 			moveRight(remaining, moveCol);
@@ -179,12 +181,16 @@ void GameEngine::moveLeft(int remaining, int moveCol)
 void GameEngine::moveRight(int remaining, int moveCol)
 {
 	while (remaining > 0 && moveCol <= 5) {
-		remaining = gameBoard->placeGem(1, moveCol, remaining);
+		remaining = gameBoard->placeGem(1, moveCol, remaining, currentPlayer);
 		moveCol++;
 	}
 
+	// at mancala
 	if (remaining > 0 && moveCol > 5) {
-		remaining = gameBoard->placeGem(opponent, remaining);
+
+		if (currentPlayer == opponent) {
+			remaining = gameBoard->placeGem(currentPlayer, remaining);
+		}
 		if (remaining > 0) {
 			moveCol = 5;
 			moveLeft(remaining, moveCol);
