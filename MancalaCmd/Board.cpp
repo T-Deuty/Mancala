@@ -72,7 +72,6 @@ int Board::placeGem(int row, int col, int remaining, int currentPlayer)
 	if (remaining == 1 && grid[row][col] == 0 && currentPlayer == row) {
 
 		// add final gem and contents of opposite grid spot to player's mancala
-
 		if (currentPlayer == 0) {
 			playerMancala += (grid[1][col] + 1);
 		}

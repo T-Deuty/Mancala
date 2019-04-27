@@ -21,14 +21,20 @@ GameEngine::~GameEngine()
 void GameEngine::handleUserInput()
 {
 	do {
-		tuple<int, int> moveCoordinates;
-		moveCoordinates = takeUserInput();
-		if (moveCoordinates != breakTuple) {
-			makeMove(moveCoordinates);
-		}
+		handleTurn();
 	} while (inputStr != "exit");
 }
 
+void GameEngine::handleTurn()
+{
+	tuple<int, int> moveCoordinates;
+	moveCoordinates = takeUserInput();
+	if (moveCoordinates != breakTuple) {
+		makeMove(moveCoordinates);
+		// end of turn, swap players
+		currentPlayer ? currentPlayer = player : currentPlayer = opponent;
+	}
+}
 
 // Function to check validity of user input. Checks if input is in correct range for current player's turn, and if it is correct data type.
 bool GameEngine::checkValidInput(int rowOrCol, int input)
@@ -150,9 +156,6 @@ void GameEngine::makeMove(tuple<int, int> moveCoordinates)
 		// TODO - handle illegal move
 	}
 
-	// end of turn, swap players
-	currentPlayer ? currentPlayer = player : currentPlayer = opponent;
-
 	gameBoard->printBoard();
 }
 
@@ -168,6 +171,11 @@ void GameEngine::moveLeft(int remaining, int moveCol)
 	if (remaining > 0 && moveCol < 0) {
 		if (currentPlayer == player) {
 			remaining = gameBoard->placeGem(currentPlayer, remaining);
+
+			// handle last gem in mancala case
+			if (remaining == 0) {
+				handleTurn();
+			}
 		}
 		if (remaining > 0) {
 			moveCol = 0;
@@ -187,9 +195,14 @@ void GameEngine::moveRight(int remaining, int moveCol)
 
 	// at mancala
 	if (remaining > 0 && moveCol > 5) {
-
 		if (currentPlayer == opponent) {
+			
 			remaining = gameBoard->placeGem(currentPlayer, remaining);
+			
+			// handle last gem in mancala case
+			if (remaining == 0) {
+				handleTurn();
+			}
 		}
 		if (remaining > 0) {
 			moveCol = 5;
@@ -197,3 +210,4 @@ void GameEngine::moveRight(int remaining, int moveCol)
 		}
 	}
 }
+

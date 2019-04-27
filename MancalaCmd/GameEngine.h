@@ -46,6 +46,8 @@ public:
 	// Called from main function to take user input until the user exits or the game finishes.
 	void handleUserInput();
 private:
+	// Abstracts logic for turn processing
+	void handleTurn();
 	// Function to check validity of user input. Checks if input is in correct range for current player's turn, and if it is correct data type.
 	// rowOrCol at 0 is row, at 1 is column
 	bool checkValidInput(int rowOrCol, int input);
